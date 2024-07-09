@@ -6,4 +6,9 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>aril-plugin-poc</name>
+  <modules>
+    <module>aril-plugin-libs</module>
+    <module>demo-plugin</module>
+    <module>transform-plugin</module>
+  </modules>
 </project>

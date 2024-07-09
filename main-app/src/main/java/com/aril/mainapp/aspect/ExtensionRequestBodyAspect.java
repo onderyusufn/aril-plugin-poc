@@ -1,0 +1,99 @@
+package com.aril.mainapp.aspect;
+
+import com.aril.annotations.Extendable;
+import com.aril.annotations.process.PreProcess;
+import com.aril.mainapp.utils.GsonUtils;
+import com.aril.mainapp.utils.MethodUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpInputMessage;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.mvc.method.annotation.RequestBodyAdvice;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Enumeration;
+import java.util.List;
+
+@Slf4j
+@RestControllerAdvice
+@RequiredArgsConstructor
+public class ExtensionRequestBodyAspect implements RequestBodyAdvice {
+    private final ExtensionManager extensionManager;
+    private final HttpServletRequest httpServletRequest;
+
+    @Override
+    public boolean supports(MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        log.info("Target-Request-Body-Type: {}", targetType);
+        return methodParameter.hasMethodAnnotation(Extendable.class);
+    }
+
+    @Override
+    public HttpInputMessage beforeBodyRead(HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) throws IOException {
+        printRequestDetails();
+        Extendable extendable = parameter.getMethodAnnotation(Extendable.class);
+        Object extensionBean = extensionManager.getBeanByExtensionId(extendable.id());
+        if (extensionBean == null) {
+            return inputMessage;
+        }
+        return callExtensionPreProcess(inputMessage, extensionBean);
+    }
+
+    @Override
+    public Object afterBodyRead(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return body;
+    }
+
+    @Override
+    public Object handleEmptyBody(Object body, HttpInputMessage inputMessage, MethodParameter parameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return body;
+    }
+
+    private void printRequestDetails() {
+        Enumeration<String> headers = httpServletRequest.getHeaderNames();
+
+        headers.asIterator().forEachRemaining(header -> {
+            log.debug("Header key=value {}={}", header, httpServletRequest.getHeader(header));
+        });
+
+        log.debug("Request query detail: {}", httpServletRequest.getQueryString());
+    }
+
+    private HttpInputMessage callExtensionPreProcess(HttpInputMessage inputMessage, Object extensionBean) throws IOException {
+        //TODO: validation for list-size=1 or 0
+        List<Method> preProcessList = MethodUtils.getMethodsAnnotatedWith(extensionBean.getClass(), PreProcess.class);
+        if (!CollectionUtils.isEmpty(preProcessList)) {
+            Method preMethod = preProcessList.get(0);
+            try {
+                //TODO: make generic
+                Object response = preMethod.invoke(extensionBean, GsonUtils.fromInputStream(inputMessage.getBody(), preMethod.getParameterTypes()[preMethod.getParameterTypes().length - 1]));
+                return inputMessageResult(inputMessage, response);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return inputMessage;
+    }
+
+    private HttpInputMessage inputMessageResult(HttpInputMessage inputMessage, Object response) {
+        return new HttpInputMessage() {
+            @Override
+            public InputStream getBody() throws IOException {
+                return GsonUtils.toInputStream(response);
+            }
+
+            @Override
+            public HttpHeaders getHeaders() {
+                return inputMessage.getHeaders();
+            }
+        };
+    }
+}
