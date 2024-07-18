@@ -9,6 +9,8 @@
   <modules>
     <module>aril-plugin-libs</module>
     <module>demo-plugin</module>
-    <module>transform-plugin</module>
+      <module>custom-lib</module>
+      <module>demo-plugin-2</module>
+    <module>transform-pl2</module>
   </modules>
 </project>

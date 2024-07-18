@@ -1,7 +1,7 @@
 package com.aril.mainapp.aspect;
 
-import com.aril.annotations.Extendable;
-import com.aril.annotations.process.PreProcess;
+import com.aril.plugin.annotations.Extendable;
+import com.aril.plugin.annotations.process.PreProcess;
 import com.aril.mainapp.utils.GsonUtils;
 import com.aril.mainapp.utils.MethodUtils;
 import jakarta.servlet.http.HttpServletRequest;

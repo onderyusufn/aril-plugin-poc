@@ -1,8 +1,9 @@
 package com.aril.mainapp.controller;
 
-import com.aril.annotations.Extendable;
+import com.aril.plugin.annotations.Extendable;
 import com.aril.mainapp.model.User;
 import com.aril.mainapp.service.UserService;
+import com.aril.plugin.constant.ExtendableConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
@@ -23,15 +22,15 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    @Extendable(id = "getUser")
+    @Extendable(id = ExtendableConstants.GET_USER)
     public ResponseEntity<User> getUser(@PathVariable String id) {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
     @PostMapping
-    @Extendable(id = "createUser")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.created(URI.create("/users")).body(userService.createUser(user));
+    @Extendable(id = ExtendableConstants.CREATE_USER)
+    public Object createUser(@RequestBody User user) {
+        return userService.createUser(user);
     }
 
     @PutMapping("/{id}")

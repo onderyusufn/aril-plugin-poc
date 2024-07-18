@@ -1,6 +1,6 @@
 package com.aril.mainapp.aspect;
 
-import com.aril.annotations.Extension;
+import com.aril.plugin.annotations.Extension;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

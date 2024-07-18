@@ -1,8 +1,8 @@
 package com.aril.mainapp.aspect;
 
-import com.aril.annotations.Extendable;
-import com.aril.annotations.process.OverrideProcess;
-import com.aril.annotations.process.PostProcess;
+import com.aril.plugin.annotations.Extendable;
+import com.aril.plugin.annotations.process.OverrideProcess;
+import com.aril.plugin.annotations.process.PostProcess;
 import com.aril.mainapp.utils.MethodUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
