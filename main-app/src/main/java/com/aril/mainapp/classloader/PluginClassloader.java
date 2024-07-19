@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -16,17 +15,15 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.jar.JarFile;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 //@RefreshScope
 public class PluginClassloader extends ClassLoader {
 
     private final String pluginsFolder;
-    private List<JarFile> jars;
     private final Map<String, ClassLoader> classLoaderMap = new HashMap<>();
+    private List<JarFile> jars;
 
     public PluginClassloader(String pluginsFolder, ClassLoader parent) {
         super(parent);
@@ -44,6 +41,7 @@ public class PluginClassloader extends ClassLoader {
         this.jars = Arrays.stream(jarFiles).map(jarFile -> {
             try {
                 JarFile jarFile1 = new JarFile(jarFile);
+                // TODO: This flow will be updated
                 classLoaderMap.put(new URL("jar", null, "file:" + jarFile1.getName()).toString(), new URLClassLoader(new URL[]{jarFile.toURI().toURL()}, parent));
                 return jarFile1;
             } catch (IOException e) {
@@ -69,6 +67,7 @@ public class PluginClassloader extends ClassLoader {
 
             URL url = resourceUrl.getFirst();
             byte[] bytes = getBytes(url);
+            // Plugin classloader
             ClassLoader classLoader = classLoaderMap.get(url.toString().split("!")[0]);
             if (classLoader != null) {
                 return classLoader.loadClass(name);

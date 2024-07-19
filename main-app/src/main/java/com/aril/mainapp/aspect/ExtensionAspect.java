@@ -1,9 +1,9 @@
 package com.aril.mainapp.aspect;
 
+import com.aril.mainapp.utils.MethodUtils;
 import com.aril.plugin.annotations.Extendable;
 import com.aril.plugin.annotations.process.OverrideProcess;
 import com.aril.plugin.annotations.process.PostProcess;
-import com.aril.mainapp.utils.MethodUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -76,5 +76,6 @@ public class ExtensionAspect {
         return new InvokeResult(false, null);
     }
 
-    private record InvokeResult(boolean invoked, Object result){}
+    private record InvokeResult(boolean invoked, Object result) {
+    }
 }

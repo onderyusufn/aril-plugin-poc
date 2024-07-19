@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 @Extension(id = ExtendableConstants.GET_USER)
-@Component
 @Slf4j
 public class GetUserExtension {
 

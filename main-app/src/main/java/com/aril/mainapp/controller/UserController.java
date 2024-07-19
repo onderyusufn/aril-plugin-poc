@@ -1,8 +1,8 @@
 package com.aril.mainapp.controller;
 
-import com.aril.plugin.annotations.Extendable;
 import com.aril.mainapp.model.User;
 import com.aril.mainapp.service.UserService;
+import com.aril.plugin.annotations.Extendable;
 import com.aril.plugin.constant.ExtendableConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

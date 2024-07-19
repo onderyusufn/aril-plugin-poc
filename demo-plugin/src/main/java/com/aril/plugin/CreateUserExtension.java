@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 @Extension(id = ExtendableConstants.CREATE_USER)
 @Slf4j
-@Component
 public class CreateUserExtension {
 
     // validation ya da başka işlemler için ilgili request dtolar vs tanımlanmalı
